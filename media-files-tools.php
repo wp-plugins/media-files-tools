@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Media Files Tool
-Plugin URI: http://www.joseconti.com
-Description: Add tools for media files.
-Version: 1.1
-Author: j.conti
-Author URI: http://www.joseconti.com
-License: GPL2
+	Plugin Name: Media Files Tool
+	Plugin URI: http://www.joseconti.com
+	Description: Add tools for media files.
+	Version: 1.1.1
+	Author: j.conti
+	Author URI: http://www.joseconti.com
+	License: GPL2
 */
 /*  Copyright AÑO NOMBRE_AUTOR_PLUGIN  (email : EMAIL DEL AUTOR DEL PLUGIN)
 
@@ -23,7 +23,7 @@ License: GPL2
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-	define( 'MEDIA_FILES_TOOLS_VERSION', '1.1' );
+	define( 'MEDIA_FILES_TOOLS_VERSION', '1.1.1' );
 	add_action('init', 'media_files_tools_init');
 	function media_files_tools_init() {
 		if (function_exists('load_plugin_textdomain')) {
@@ -216,6 +216,12 @@ License: GPL2
         wp_enqueue_media();
 		wp_enqueue_script('media_files_tools_load_js' , "/" . PLUGINDIR . '/media-files-tools/js/uploader.js' , array('jquery'),'2.0');
         wp_enqueue_script('media_files_tools_load_js');
+        $translation_array = array(
+			'mediaManager'				=> __( 'Featured Image', 'media-file-tools' ),
+			'textButton'				=> __( 'Use as Featured Image', 'media-file-tools' ),
+			'ChangeFeaturedImageText'	=> __( 'Change Featured Image', 'media-file-tools' )
+			);
+		wp_localize_script( 'media_files_tools_load_js', 'media_files_localize', $translation_array );
 	}
 	function media_files_tools_update_featured_image() {
 
