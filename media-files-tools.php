@@ -3,7 +3,7 @@
 	Plugin Name: Media Files Tool
 	Plugin URI: http://www.joseconti.com
 	Description: Add tools for media files.
-	Version: 1.2
+	Version: 1.2.1
 	Author: j.conti
 	Author URI: http://www.joseconti.com
 	License: GPL2
@@ -23,7 +23,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-	define( 'MEDIA_FILES_TOOLS_VERSION', '1.2' );
+	define( 'MEDIA_FILES_TOOLS_VERSION', '1.2.1' );
 	$extensions = array(
 		'gif',
 		'jpg',
@@ -305,36 +305,41 @@
 		return $src;
 	}
 	function media_files_tools_change_links($content){
-		$links = media_files_tools_search_links($content);
-		if( is_attachment() ) return;
-		foreach ( $links[img_url] as $link) {
-			$fileID = media_files_tools_get_file_id($link);
-			if( $fileID ){
-				$url = get_post_meta( $fileID, '_media_files_tools_image_link_to', true);
-				$attachment_page = get_attachment_link( $fileID );
-					if ( $url ){
-						$url = $url;
+		global $post;
+		if( has_shortcode( $post->post_content, 'gallery' ) ) {
+			$links = media_files_tools_search_links($content);
+			if( is_attachment() ) return;
+			foreach ( $links[img_url] as $link) {
+				$fileID = media_files_tools_get_file_id($link);
+				if( $fileID ){
+					$url = get_post_meta( $fileID, '_media_files_tools_image_link_to', true);
+					$attachment_page = get_attachment_link( $fileID );
+						if ( $url ){
+							$url = $url;
+						} else {
+							$url = $attachment_page;
+						}
 					} else {
-						$url = $attachment_page;
+						$realsrc			= media_files_tools_get_src_full_maybe( $link );
+						$fileID				= media_files_tools_get_file_id( $realsrc );
+						$attachment_page	= get_attachment_link( $fileID );
+						$url				= get_post_meta( $fileID, '_media_files_tools_image_link_to', true);
+						if ( $url ){
+							$url = $url;
+						} else {
+							$url = $attachment_page;
+						}
 					}
-				} else {
-					$realsrc			= media_files_tools_get_src_full_maybe( $link );
-					$fileID				= media_files_tools_get_file_id( $realsrc );
-					$attachment_page	= get_attachment_link( $fileID );
-					$url				= get_post_meta( $fileID, '_media_files_tools_image_link_to', true);
-					if ( $url ){
-						$url = $url;
-					} else {
-						$url = $attachment_page;
-					}
-				}
-				$urlPrepare = preg_replace( '/\//', '\/', $attachment_page);
-				$urlSecondChange = preg_replace('/(\?)\s*/', '\\?', $urlPrepare);
+					$urlPrepare = preg_replace( '/\//', '\/', $attachment_page);
+					$urlSecondChange = preg_replace('/(\?)\s*/', '\\?', $urlPrepare);
 
-				$pattern = '/' . $urlSecondChange . '/';
-				$content = preg_replace( $pattern, $url, $content );
-			}
+					$pattern = '/' . $urlSecondChange . '/';
+					$content = preg_replace( $pattern, $url, $content );
+				}
+				return $content;
+		} else {
 			return $content;
+		}
 	}
 	add_filter( 'the_content', 'media_files_tools_change_links',9999999);
 ?>
